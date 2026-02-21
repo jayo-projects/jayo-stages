@@ -41,8 +41,8 @@ subprojects {
                 }
 
                 scm {
-                    connection.set("scm:git:https://github.com/jayo-projects/jayo-stages")
-                    developerConnection.set("scm:git:git://github.com/jayo-projects/jayo-stages.git")
+                    connection.set("scm:git@github.com/jayo-projects/jayo-stages")
+                    developerConnection.set("scm:git@github.com/jayo-projects/jayo-stages.git")
                     url.set("https://github.com/jayo-projects/jayo-stages.git")
                 }
             }
