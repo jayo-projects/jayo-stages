@@ -1,0 +1,26 @@
+[versions]
+
+java = "17"
+
+# plugins
+# https://github.com/researchgate/gradle-release/releases
+release = "3.1.0"
+
+# main
+# https://github.com/jspecify/jspecify/releases
+jspecify = "1.0.0"
+
+# tests
+# https://mvnrepository.com/artifact/org.assertj/assertj-core
+assertj = "3.27.7"
+# https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+junit = "6.0.2"
+# https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk-platform-logging
+slf4j = "2.0.17"
+# https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+logback = "1.5.29"
+# https://mvnrepository.com/artifact/org.mockito/mockito-core
+mockito = "5.21.0"
+
+[plugins]
+release = { id = "net.researchgate.release", version.ref = "release" }
