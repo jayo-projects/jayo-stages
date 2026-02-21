@@ -28,12 +28,19 @@ Maven:
 
 The Jayo stages code is written in Java without the use of any external dependencies, to be as light as possible.
 
-See the project website (*coming soon*) for documentation and APIs.
-
 Jayo stages requires Java 17 or more recent.
 
 *Contributions are very welcome, simply clone this repo and submit a PR when your fix, new feature, or optimization is
 ready!*
+
+## The CompletableFuture paradox
+
+The `CompletableFuture` class is the only implementation of the CompletionStage in the JVM. This class is tightly
+coupled with the fork-join feature that aims to handle CPU-intensive tasks. Unless configured otherwise, by default a
+CompletableFuture uses the `ForkJoinPool.commonPool()` to execute all its async tasks.
+
+But we often use want to asynchronously process IO tasks, `Promesse` simplifies that use-case by providing a minimal
+cancelable CompletionStage implementation.
 
 ## License
 
