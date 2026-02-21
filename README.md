@@ -28,9 +28,6 @@ Maven:
 
 The Jayo stages code is written in Java without the use of any external dependencies, to be as light as possible.
 
-Jayo HTTP's source code is derived and inspired from [OkHttp](https://github.com/square/okhttp), but does not preserve
-backward compatibility with it.
-
 See the project website (*coming soon*) for documentation and APIs.
 
 Jayo stages requires Java 17 or more recent.
