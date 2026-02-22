@@ -35,12 +35,18 @@ ready!*
 
 ## The CompletableFuture paradox
 
-The `CompletableFuture` class is the only implementation of the CompletionStage in the JVM. This class is tightly
-coupled with the fork-join feature that aims to handle CPU-intensive tasks. Unless configured otherwise, by default a
-CompletableFuture uses the `ForkJoinPool.commonPool()` to execute all its async tasks.
+The `CompletableFuture` class is the only implementation of the `CompletionStage` interface provided by the JVM. Unless
+configured otherwise, by default a CompletableFuture uses the `ForkJoinPool.commonPool()` to schedule all its async
+tasks, which is shared across all other CompletableFutures and Parallel Streams in your application.
 
-But we often use want to asynchronously process IO tasks, `Promesse` simplifies that use-case by providing a minimal
-cancelable CompletionStage implementation.
+The Fork/Join Pool uses a work-stealing algorithm: each thread has its own queue of tasks, and idle threads "steal"
+tasks from busy threads' queues. This minimizes contention and maximizes CPU utilization.
+
+**Implication:** This makes CompletableFutures efficient for divide-and-conquer tasks (e.g., recursive computations),
+but less so for I/O-bound tasks.
+
+`Promesse` fills this gap by providing a cancelable `CompletionStage` implementation, adapted to run I/O-bound async
+tasks.
 
 ## License
 
