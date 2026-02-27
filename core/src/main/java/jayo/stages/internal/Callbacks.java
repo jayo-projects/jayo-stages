@@ -66,7 +66,7 @@ sealed abstract class Callbacks<T> {
     }
 
     boolean isCompleted() {
-        return true;
+        return false;
     }
 
     /**
@@ -91,10 +91,6 @@ sealed abstract class Callbacks<T> {
         @Override
         @NonNull Failure<T> completeExceptionally(final Throwable ex) {
             return new Failure<>(ex);
-        }
-
-        boolean isCompleted() {
-            return false;
         }
     }
 
@@ -154,10 +150,6 @@ sealed abstract class Callbacks<T> {
             assert ex != null;
             return new Failure<>(ex);
         }
-
-        boolean isCompleted() {
-            return false;
-        }
     }
 
     /**
@@ -181,6 +173,10 @@ sealed abstract class Callbacks<T> {
 
             executor.execute(() -> successCallback.accept(result));
             return null;
+        }
+
+        boolean isCompleted() {
+            return true;
         }
     }
 
@@ -206,6 +202,10 @@ sealed abstract class Callbacks<T> {
 
             executor.execute(() -> failureCallback.accept(ex));
             return null;
+        }
+
+        boolean isCompleted() {
+            return true;
         }
     }
 }

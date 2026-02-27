@@ -12,17 +12,17 @@ import java.util.concurrent.*;
 
 final class RunnableFuturePromesse<T> extends RealPromesse<T> {
     private final @NonNull RunnableFuture<T> asyncTask;
-    private final boolean interruptWhenCanceled;
+    private final boolean interruptWhenCancelled;
 
     RunnableFuturePromesse(final @NonNull Executor executor,
                            final @Nullable Runnable onCancel,
                            final boolean useInitialExecutor,
                            final @NonNull Callable<T> callable,
-                           final boolean interruptWhenCanceled) {
+                           final boolean interruptWhenCancelled) {
         super(executor, onCancel, useInitialExecutor);
         assert callable != null;
 
-        this.interruptWhenCanceled = interruptWhenCanceled;
+        this.interruptWhenCancelled = interruptWhenCancelled;
         this.asyncTask = new FutureTask<>(callable) {
             @Override
             protected void set(final T result) {
@@ -44,10 +44,10 @@ final class RunnableFuturePromesse<T> extends RealPromesse<T> {
 
     @Override
     public boolean cancel() {
-        final var canceled = asyncTask.cancel(interruptWhenCanceled);
-        if (canceled) {
+        final var cancelled = asyncTask.cancel(interruptWhenCancelled);
+        if (cancelled) {
             completeExceptionally(new CancellationException());
         }
-        return canceled;
+        return cancelled;
     }
 }

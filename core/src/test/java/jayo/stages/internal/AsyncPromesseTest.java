@@ -164,7 +164,7 @@ public class AsyncPromesseTest {
     }
 
     @Test
-    public void completableAsyncCanceled() {
+    public void completableAsyncCancelled() {
         var interrupted = new CompletableFuture<Boolean>();
         var cancelCallback = new CompletableFuture<Boolean>();
         var completablePromesse = Promesse.builder(baseExecutor)
@@ -175,7 +175,7 @@ public class AsyncPromesseTest {
             try {
                 Thread.sleep(200);
                 interrupted.complete(false);
-                completablePromesse.complete(2); // returns false because already canceled
+                completablePromesse.complete(2); // returns false because already cancelled
             } catch (InterruptedException e) {
                 interrupted.complete(true);
                 throw new RuntimeException(e);
@@ -189,9 +189,9 @@ public class AsyncPromesseTest {
                 });
         // cancel in the main thread before completion
         sleep();
-        var canceled = completablePromesse.cancel();
+        var cancelled = completablePromesse.cancel();
 
-        assertThat(canceled).isTrue();
+        assertThat(cancelled).isTrue();
         assertThat(interrupted.join()).isFalse();
         assertThat(cancelCallback.join()).isTrue();
         assertThatThrownBy(result::join)
@@ -200,7 +200,7 @@ public class AsyncPromesseTest {
     }
 
     @Test
-    public void callableAsyncCanceledNoInterrupt() {
+    public void callableAsyncCancelledNoInterrupt() {
         var interrupted = new CompletableFuture<Boolean>();
         var cancelCallback = new CompletableFuture<Boolean>();
         var completablePromesse = Promesse.builder(baseExecutor)
@@ -226,9 +226,9 @@ public class AsyncPromesseTest {
                 });
         // cancel in the main thread before completion
         sleep();
-        var canceled = completablePromesse.cancel();
+        var cancelled = completablePromesse.cancel();
 
-        assertThat(canceled).isTrue();
+        assertThat(cancelled).isTrue();
         assertThat(interrupted.join()).isFalse();
         assertThat(cancelCallback.join()).isTrue();
         assertThatThrownBy(result::join)
@@ -237,7 +237,7 @@ public class AsyncPromesseTest {
     }
 
     @Test
-    public void callableAsyncCanceledInterrupt() {
+    public void callableAsyncCancelledInterrupt() {
         var interrupted = new CompletableFuture<Boolean>();
         var cancelCallback = new CompletableFuture<Boolean>();
         var completablePromesse = Promesse.builder(baseExecutor)
@@ -263,9 +263,9 @@ public class AsyncPromesseTest {
                 });
         // cancel in the main thread before completion
         sleep();
-        var canceled = completablePromesse.cancel();
+        var cancelled = completablePromesse.cancel();
 
-        assertThat(canceled).isTrue();
+        assertThat(cancelled).isTrue();
         assertThat(interrupted.join()).isTrue();
         assertThat(cancelCallback.join()).isTrue();
         assertThatThrownBy(result::join)
@@ -274,7 +274,7 @@ public class AsyncPromesseTest {
     }
 
     @Test
-    public void completableAsyncOtherExecutorCanceled() {
+    public void completableAsyncOtherExecutorCancelled() {
         var interrupted = new CompletableFuture<Boolean>();
         var cancelCallback = new CompletableFuture<Boolean>();
         var completablePromesse = Promesse.builder(baseExecutor)
@@ -285,7 +285,7 @@ public class AsyncPromesseTest {
             try {
                 Thread.sleep(200);
                 interrupted.complete(false);
-                completablePromesse.complete(2); // returns false because already canceled
+                completablePromesse.complete(2); // returns false because already cancelled
             } catch (InterruptedException e) {
                 interrupted.complete(true);
                 throw new RuntimeException(e);
@@ -299,9 +299,9 @@ public class AsyncPromesseTest {
                 }, otherExecutor);
         // cancel in the main thread before completion
         sleep();
-        var canceled = completablePromesse.cancel();
+        var cancelled = completablePromesse.cancel();
 
-        assertThat(canceled).isTrue();
+        assertThat(cancelled).isTrue();
         assertThat(interrupted.join()).isFalse();
         assertThat(cancelCallback.join()).isTrue();
         assertThatThrownBy(result::join)
@@ -310,7 +310,7 @@ public class AsyncPromesseTest {
     }
 
     @Test
-    public void callableAsyncOtherExecutorCanceledNoInterrupt() {
+    public void callableAsyncOtherExecutorCancelledNoInterrupt() {
         var interrupted = new CompletableFuture<Boolean>();
         var cancelCallback = new CompletableFuture<Boolean>();
         var completablePromesse = Promesse.builder(baseExecutor)
@@ -336,9 +336,9 @@ public class AsyncPromesseTest {
                 }, otherExecutor);
         // cancel in the main thread before completion
         sleep();
-        var canceled = completablePromesse.cancel();
+        var cancelled = completablePromesse.cancel();
 
-        assertThat(canceled).isTrue();
+        assertThat(cancelled).isTrue();
         assertThat(interrupted.join()).isFalse();
         assertThat(cancelCallback.join()).isTrue();
         assertThatThrownBy(result::join)
@@ -347,7 +347,7 @@ public class AsyncPromesseTest {
     }
 
     @Test
-    public void callableAsyncOtherExecutorCanceledInterrupt() {
+    public void callableAsyncOtherExecutorCancelledInterrupt() {
         var interrupted = new CompletableFuture<Boolean>();
         var cancelCallback = new CompletableFuture<Boolean>();
         var completablePromesse = Promesse.builder(baseExecutor)
@@ -373,9 +373,9 @@ public class AsyncPromesseTest {
                 }, otherExecutor);
         // cancel in the main thread before completion
         sleep();
-        var canceled = completablePromesse.cancel();
+        var cancelled = completablePromesse.cancel();
 
-        assertThat(canceled).isTrue();
+        assertThat(cancelled).isTrue();
         assertThat(interrupted.join()).isTrue();
         assertThat(cancelCallback.join()).isTrue();
         assertThatThrownBy(result::join)

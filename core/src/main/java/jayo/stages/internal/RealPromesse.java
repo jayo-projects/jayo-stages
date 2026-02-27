@@ -22,10 +22,10 @@
 
 package jayo.stages.internal;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import jayo.stages.AsyncExecution;
 import jayo.stages.Promesse;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -102,9 +102,13 @@ public class RealPromesse<T> implements Promesse.Completable<T> {
             // If we successfully switched to the failure terminal step, we're done.
             final var failure = currentCallbacks.completeExceptionally(ex);
             if (CALLBACKS_HANDLE.compareAndSet(this, currentCallbacks, failure)) {
-                // synchronously execute the onCancel callback if the stage was canceled
+                // synchronously execute the onCancel callback if the stage was cancelled
                 if (ex instanceof CancellationException && onCancel != null) {
-                    onCancel.run();
+                    try {
+                        onCancel.run();
+                    } catch (Throwable ex2) {
+                        ex.addSuppressed(ex2);
+                    }
                 }
                 currentCallbacks.callFailureCallbacks(ex);
                 return true;
@@ -487,9 +491,9 @@ public class RealPromesse<T> implements Promesse.Completable<T> {
 
         @Override
         public <T> @NonNull Promesse<T> call(final @NonNull Callable<T> callable,
-                                             final boolean interruptWhenCanceled) {
+                                             final boolean interruptWhenCancelled) {
             Objects.requireNonNull(callable);
-            return new RunnableFuturePromesse<>(executor, onCancel, useInitialExecutor, callable, interruptWhenCanceled);
+            return new RunnableFuturePromesse<>(executor, onCancel, useInitialExecutor, callable, interruptWhenCancelled);
         }
 
         @Override
@@ -544,8 +548,10 @@ public class RealPromesse<T> implements Promesse.Completable<T> {
     }
 
     @Override
-    public final <U, V> @NonNull Promesse<V> thenCombine(final @NonNull CompletionStage<? extends U> other,
-                                                         final @NonNull BiFunction<? super T, ? super U, ? extends V> fn) {
+    public final <U, V> @NonNull Promesse<V> thenCombine(
+            final @NonNull CompletionStage<? extends U> other,
+            final @NonNull BiFunction<? super T, ? super U, ? extends V> fn
+    ) {
         return thenCombineAsync(other, fn, SAME_THREAD_EXECUTOR);
     }
 
@@ -558,20 +564,24 @@ public class RealPromesse<T> implements Promesse.Completable<T> {
     }
 
     @Override
-    public final <U> @NonNull Promesse<Void> thenAcceptBoth(final @NonNull CompletionStage<? extends U> other,
-                                                            final @NonNull BiConsumer<? super T, ? super U> action) {
+    public final <U> @NonNull Promesse<@Nullable Void> thenAcceptBoth(
+            final @NonNull CompletionStage<? extends U> other,
+            final @NonNull BiConsumer<? super T, ? super U> action
+    ) {
         return thenAcceptBothAsync(other, action, SAME_THREAD_EXECUTOR);
     }
 
     @Override
-    public final <U> @NonNull Promesse<Void> thenAcceptBothAsync(final @NonNull CompletionStage<? extends U> other,
-                                                                 final @NonNull BiConsumer<? super T, ? super U> action) {
+    public final <U> @NonNull Promesse<@Nullable Void> thenAcceptBothAsync(
+            final @NonNull CompletionStage<? extends U> other,
+            final @NonNull BiConsumer<? super T, ? super U> action
+    ) {
         return thenAcceptBothAsync(other, action, executor);
     }
 
     @Override
-    public final @NonNull Promesse<Void> runAfterBoth(final @NonNull CompletionStage<?> other,
-                                                      final @NonNull Runnable action) {
+    public final @NonNull Promesse<@Nullable Void> runAfterBoth(final @NonNull CompletionStage<?> other,
+                                                                final @NonNull Runnable action) {
         return runAfterBothAsync(other, action, SAME_THREAD_EXECUTOR);
     }
 
@@ -656,7 +666,9 @@ public class RealPromesse<T> implements Promesse.Completable<T> {
     }
 
     @Override
-    public final @NonNull Promesse<T> whenComplete(final @NonNull BiConsumer<? super T, ? super @Nullable Throwable> action) {
+    public final @NonNull Promesse<T> whenComplete(
+            final @NonNull BiConsumer<? super T, ? super @Nullable Throwable> action
+    ) {
         return whenCompleteAsync(action, SAME_THREAD_EXECUTOR);
     }
 
@@ -668,7 +680,9 @@ public class RealPromesse<T> implements Promesse.Completable<T> {
     }
 
     @Override
-    public final <U> @NonNull Promesse<U> handle(final @NonNull BiFunction<? super T, @Nullable Throwable, ? extends U> fn) {
+    public final <U> @NonNull Promesse<U> handle(
+            final @NonNull BiFunction<? super T, @Nullable Throwable, ? extends U> fn
+    ) {
         return handleAsync(fn, SAME_THREAD_EXECUTOR);
     }
 

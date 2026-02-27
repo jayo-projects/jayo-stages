@@ -45,7 +45,7 @@ tasks from busy threads' queues. This minimizes contention and maximizes CPU uti
 **Implication:** This makes CompletableFutures efficient for divide-and-conquer tasks (e.g., recursive computations),
 but less so for I/O-bound tasks.
 
-`Promesse` fills this gap by providing a cancelable `CompletionStage` implementation, adapted to run I/O-bound async
+`Promesse` fills this gap by providing a cancellable `CompletionStage` implementation, adapted to run I/O-bound async
 tasks.
 
 ## License

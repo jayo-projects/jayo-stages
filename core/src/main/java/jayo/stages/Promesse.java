@@ -5,9 +5,9 @@
 
 package jayo.stages;
 
+import jayo.stages.internal.RealPromesse;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import jayo.stages.internal.RealPromesse;
 
 import java.util.Objects;
 import java.util.concurrent.*;
@@ -17,9 +17,16 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * A {@link #cancel() cancelable} {@link CompletionStage}.
+ * A {@link #cancel() cancellable} {@link CompletionStage}.
+ * <p>
+ * {@code Promesse<T>} is the representation of the computation, which will eventually succeed, fail, or be cancelled
+ * before completion. This promise lifecycle has two states: pending and completed and, once completed, only two
+ * outcomes: success or failure. The {@link #cancel} operation immediately completes this stage with a
+ * {@link CancellationException}, it is a specific type of failure.
  *
+ * @param <T> the type of elements of this stage.
  * @see Promesse.Completable
+ * @see StagesAsyncStream
  */
 public interface Promesse<T> extends CompletionStage<T> {
     static @NonNull Builder builder(final @NonNull Executor initialExecutor) {
@@ -32,12 +39,13 @@ public interface Promesse<T> extends CompletionStage<T> {
      * stages that have not already completed will also complete exceptionally, with a {@link CompletionException}
      * caused by this {@code CancellationException}.
      *
-     * @return {@code true} if this stage is now canceled.
+     * @return {@code true} if this stage is now cancelled.
      */
     boolean cancel();
 
     /**
-     * @return the executor that will be used for all {@code *Async} methods without explicit {@link Executor} argument.
+     * @return the executor that will be used for all {@code *Async} methods without the explicit {@link Executor}
+     * argument.
      */
     @NonNull Executor getExecutor();
 
@@ -85,10 +93,12 @@ public interface Promesse<T> extends CompletionStage<T> {
         @NonNull Builder asyncExecution(final @NonNull AsyncExecution asyncExecution);
 
         /**
-         * Sets the {@link Runnable} to be invoked when this stage is canceled. It may be used to close or cancel the
-         * underlying source of this stage (an IO socket, a database connection, etc.).
+         * Sets the {@link Runnable} to be invoked when this stage is {@link #cancel() cancelled}. It may be used to
+         * close, cancel, or rollback the underlying source of this stage (an IO socket, a database connection, etc.).
          * <p>
-         * Note: This callback must execute fast and should not throw since it will be invoked synchronously.
+         * Note: This callback must execute fast and should not throw since it will be invoked synchronously. If it
+         * does throw, the thrown exception will be added as a {@link Throwable#getSuppressed() suppressed exception} of
+         * the parent {@link CancellationException}.
          */
         @NonNull Builder onCancel(final @NonNull Runnable onCancel);
 
@@ -96,21 +106,21 @@ public interface Promesse<T> extends CompletionStage<T> {
          * Asynchronously executes the given {@link Runnable} using the {@link #builder(Executor) initial executor}.
          */
         default @NonNull Promesse<@Nullable Void> run(final @NonNull Runnable runnable,
-                                                      final boolean interruptWhenCanceled) {
+                                                      final boolean interruptWhenCancelled) {
             return call(
                     // transform Runnable to Callable
                     () -> {
                         runnable.run();
                         return null;
                     },
-                    interruptWhenCanceled
+                    interruptWhenCancelled
             );
         }
 
         /**
          * Asynchronously executes the given {@link Callable} using the {@link #builder(Executor) initial executor}.
          */
-        <T> @NonNull Promesse<T> call(final @NonNull Callable<T> call, final boolean interruptWhenCanceled);
+        <T> @NonNull Promesse<T> call(final @NonNull Callable<T> call, final boolean interruptWhenCancelled);
 
         /**
          * Builds a {@link Completable completable Promesse} for explicit completion.
@@ -161,17 +171,17 @@ public interface Promesse<T> extends CompletionStage<T> {
                                                  final @NonNull Executor executor);
 
     @Override
-    <U> @NonNull Promesse<Void> thenAcceptBoth(final @NonNull CompletionStage<? extends U> other,
-                                               final @NonNull BiConsumer<? super T, ? super U> action);
+    <U> @NonNull Promesse<@Nullable Void> thenAcceptBoth(final @NonNull CompletionStage<? extends U> other,
+                                                         final @NonNull BiConsumer<? super T, ? super U> action);
 
     @Override
-    <U> @NonNull Promesse<Void> thenAcceptBothAsync(final @NonNull CompletionStage<? extends U> other,
-                                                    final @NonNull BiConsumer<? super T, ? super U> action);
+    <U> @NonNull Promesse<@Nullable Void> thenAcceptBothAsync(final @NonNull CompletionStage<? extends U> other,
+                                                              final @NonNull BiConsumer<? super T, ? super U> action);
 
     @Override
-    default <U> @NonNull Promesse<Void> thenAcceptBothAsync(final @NonNull CompletionStage<? extends U> other,
-                                                            final @NonNull BiConsumer<? super T, ? super U> action,
-                                                            final @NonNull Executor executor) {
+    default <U> @NonNull Promesse<@Nullable Void> thenAcceptBothAsync(final @NonNull CompletionStage<? extends U> other,
+                                                                      final @NonNull BiConsumer<? super T, ? super U> action,
+                                                                      final @NonNull Executor executor) {
         Objects.requireNonNull(other);
         Objects.requireNonNull(action);
         Objects.requireNonNull(executor);
@@ -188,8 +198,8 @@ public interface Promesse<T> extends CompletionStage<T> {
     }
 
     @Override
-    @NonNull Promesse<Void> runAfterBoth(final @NonNull CompletionStage<?> other,
-                                         final @NonNull Runnable action);
+    @NonNull Promesse<@Nullable Void> runAfterBoth(final @NonNull CompletionStage<?> other,
+                                                   final @NonNull Runnable action);
 
     @Override
     @NonNull Promesse<@Nullable Void> runAfterBothAsync(final @NonNull CompletionStage<?> other,
