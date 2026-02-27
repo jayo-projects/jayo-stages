@@ -4,6 +4,8 @@
  */
 
 module jayo.stages {
+    requires transitive jayo.async.stream;
+
     requires static org.jspecify;
 
     exports jayo.stages;

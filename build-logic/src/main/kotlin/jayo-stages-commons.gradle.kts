@@ -20,20 +20,22 @@ repositories {
 
 dependencies {
     api("org.jspecify:jspecify:${catalogVersion("jspecify")}")
+    api("dev.jayo:jayo-async-stream:${catalogVersion("jayoAsyncStream")}")
 
     testImplementation("org.junit.jupiter:junit-jupiter:${catalogVersion("junit")}")
     testImplementation("org.assertj:assertj-core:${catalogVersion("assertj")}")
     testImplementation("org.mockito:mockito-junit-jupiter:${catalogVersion("mockito")}")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:${catalogVersion("junit")}")
-    testRuntimeOnly("org.slf4j:slf4j-jdk-platform-logging:${catalogVersion("slf4j")}")
-    testRuntimeOnly("ch.qos.logback:logback-classic:${catalogVersion("logback")}")
 }
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(javaVersion)
     }
+
+    withSourcesJar()
+    withJavadocJar()
 }
 
 tasks {
@@ -55,9 +57,4 @@ tasks {
             showStandardStreams = true
         }
     }
-}
-
-java {
-    withSourcesJar()
-    withJavadocJar()
 }

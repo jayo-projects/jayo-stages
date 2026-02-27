@@ -23,7 +23,7 @@ subprojects {
         publications.withType<MavenPublication> {
             pom {
                 name.set(project.name)
-                description.set("Jayo is a CompletionStage library for the JVM")
+                description.set("Jayo stages is a CompletionStage library for the JVM")
                 url.set("https://github.com/jayo-projects/jayo-stages")
 
                 licenses {

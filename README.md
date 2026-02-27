@@ -1,10 +1,13 @@
 [![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?logo=apache&style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Version](https://img.shields.io/maven-central/v/dev.jayo/jayo-stages?logo=apache-maven&color=&style=flat-square)](https://search.maven.org/artifact/dev.jayo/jayo-stages)
+[![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white&style=flat-square)](https://www.java.com/en/download/help/whatis_java.html)
 
 # Jayo stages
 
 * `Promesse` is a cancellable CompletionStage implementation inspired by the
-[Lukáš Křečan CompletionStage implementation](https://github.com/lukas-krecan/completion-stage).
+[CompletionStage implementation by Lukáš Křečan](https://github.com/lukas-krecan/completion-stage).
+* `StagesAsyncStream` is an AsyncStream that streams the results of several CompletionStages producing the same result
+type.
 * `Stages` offer a few util static methods for CompletionStage.
 
 Jayo stages is available on Maven Central.
