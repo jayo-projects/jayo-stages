@@ -6,6 +6,7 @@
 package jayo.stages.internal;
 
 import jayo.result.Result;
+import jayo.stages.JayoStages;
 import jayo.stages.Promesse;
 import jayo.stages.StagesAsyncStream;
 import jayo.stream.AsyncStream;
@@ -259,7 +260,7 @@ public class StagesAsyncStreamTest {
             Thread.sleep(100L);
             return 1;
         }, false);
-        return StagesAsyncStream.of(List.of(promesse1, promesse2));
+        return JayoStages.asyncStreamOf(List.of(promesse1, promesse2));
     }
 
     private void assertThatAsyncStreamContains(AsyncStream<Integer> asyncStream,

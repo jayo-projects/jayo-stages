@@ -6,9 +6,11 @@
 
 * `Promesse` is a cancellable CompletionStage implementation inspired by the
 [CompletionStage implementation by Lukáš Křečan](https://github.com/lukas-krecan/completion-stage).
-* `StagesAsyncStream` is an AsyncStream that streams the results of several CompletionStages producing the same result
-type.
-* `Stages` offer a few util static methods for CompletionStage.
+* `JayoStages` offer a few util methods for CompletionStage.
+  * the `asyncStreamOf(stages)` method returns a `StagesAsyncStream`, an AsyncStream that streams the results of several
+CompletionStages producing the same result type.
+  * the `firstSuccessfulOrThrow(promesseBuilder, stages)` method returns the first successful CompletionStage, or throws
+an exception if all CompletionStages failed.
 
 Jayo stages is available on Maven Central.
 
@@ -29,7 +31,8 @@ Maven:
 </dependency>
 ```
 
-The Jayo stages code is written in Java without the use of any external dependencies, to be as light as possible.
+The Jayo stages code is written in Java without the use of any external dependencies except Jayo Result and Jayo
+AsyncStream – both of them declaring only a single interface – to be as light as possible.
 
 Jayo stages requires Java 17 or more recent.
 

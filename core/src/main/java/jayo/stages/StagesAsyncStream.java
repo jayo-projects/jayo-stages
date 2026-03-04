@@ -11,7 +11,6 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
@@ -20,17 +19,10 @@ import java.util.function.Function;
 /**
  * An {@link AsyncStream} that streams the results of several {@linkplain CompletionStage CompletionStages} of the same
  * type.
+ *
+ * @see JayoStages#asyncStreamOf(Collection)
  */
 public sealed interface StagesAsyncStream<T> extends AsyncStream<T> permits RealStagesAsyncStream {
-    static <T> @NonNull StagesAsyncStream<T> of(
-            final @NonNull Collection<? extends @NonNull CompletionStage<T>> stages
-    ) {
-        Objects.requireNonNull(stages);
-        // do a protective copy to array
-        @SuppressWarnings("unchecked") final CompletionStage<T>[] copy = stages.toArray(new CompletionStage[0]);
-        return new RealStagesAsyncStream<>(copy);
-    }
-
     <U> @NonNull StagesAsyncStream<U> map(final @NonNull Function<? super T, ? extends U> fn);
 
     <U> @NonNull StagesAsyncStream<U> mapAsync(final @NonNull Function<? super T, ? extends U> fn);
