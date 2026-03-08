@@ -7,9 +7,11 @@ package jayo.stages.internal;
 
 import jayo.stages.Promesse;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,14 +21,14 @@ public final class JayoStagesUtils {
     }
 
     public static <T> @NonNull Promesse<T> firstSuccessfulOrThrow(
-            final Promesse.@NonNull Builder promesseBuilder,
+            final @NonNull Executor executor,
             final @NonNull CompletionStage<T> @NonNull [] stages
     ) {
-        assert promesseBuilder != null;
+        assert executor != null;
         assert stages != null;
 
+        final var promesse = JayoStagesUtils.<T>createPromesse(executor, stages);
         final var failureCount = new AtomicInteger(stages.length);
-        final var promesse = promesseBuilder.<T>buildCompletable();
         for (final var stage : stages) {
             stage.whenComplete((result, ex) -> {
                 if (ex == null) {
@@ -42,6 +44,51 @@ public final class JayoStagesUtils {
             });
         }
         return promesse;
+    }
+
+    public static @NonNull Promesse<@Nullable Void> allSuccessfulOrThrow(
+            final @NonNull Executor executor,
+            final @NonNull CompletionStage<?> @NonNull [] stages
+    ) {
+        assert executor != null;
+        assert stages != null;
+
+        final var promesse = JayoStagesUtils.<Void>createPromesse(executor, stages);
+        final var successCount = new AtomicInteger(stages.length);
+        for (final var stage : stages) {
+            stage.whenComplete((result, ex) -> {
+                if (ex != null) {
+                    promesse.completeExceptionally(ex);
+
+                    // cancel other stages after this failure
+                    Arrays.stream(stages)
+                            .filter(s -> s != stage)
+                            .forEach(JayoStagesUtils::tryCancel);
+                } else if (successCount.decrementAndGet() == 0) {
+                    promesse.complete(null);
+                }
+            });
+        }
+        return promesse;
+    }
+
+    /**
+     * @return a {@link Promesse} that will try to cancel all stages when cancelled.
+     */
+    private static <T> Promesse.@NonNull Completable<T> createPromesse(
+            final @NonNull Executor executor,
+            final @NonNull CompletionStage<?> @NonNull [] stages
+    ) {
+        assert executor != null;
+        assert stages != null;
+
+        return Promesse.builder(executor)
+                .onCancel(() -> {
+                    for (final var stage : stages) {
+                        tryCancel(stage);
+                    }
+                })
+                .buildCompletable();
     }
 
     private static <T> void tryCancel(final @NonNull CompletionStage<T> stage) {
